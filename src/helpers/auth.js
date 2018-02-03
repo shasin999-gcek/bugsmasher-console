@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const { protocol, hostname } = window.location;
-const url = protocol + '//' + hostname + '/api';
+const url = protocol + '//' + hostname + ':8080/api';
 
 
 function handleError(e) {
