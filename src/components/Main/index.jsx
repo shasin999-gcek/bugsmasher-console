@@ -1,15 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Row, Col } from 'react-bootstrap';
-
-import { setContestDetails } from 'actions';
-
-// importing stylesheets
-import "assets/css/console.css";
-import "assets/css/material-kit.css";
-import "assets/css/bootstrap-overrides.css";
-
 
 // importing necessary components
 import Loading from 'components/Loading/Loading';
@@ -33,19 +24,31 @@ class Main extends React.Component {
 		};
 
 		this.handleOnClick = this.handleOnClick.bind(this);
-    this.handleOnSubmitCode = this.handleOnSubmitCode.bind(this);
+		this.handleOnSubmitCode = this.handleOnSubmitCode.bind(this);
+		this.handleOnChangeQuestionContents = this.handleOnChangeQuestionContents.bind(this);
 	}
 
-  handleOnSubmitCode(code) {
+	selectQuestion() {
+		var selectedQuestion = this.state.questions.find(question => {
+			return question.info.level === this.state.selectedLevel
+		});
+		this.setState({ selectedQuestion });
+	}
+
+	handleOnChangeQuestionContents(code) {
+		// updating questions
+		var questions = this.state.questions.slice();
+		var selectedQuesIndex = questions.findIndex(q => q.info.level === this.state.selectedLevel);
+		questions[selectedQuesIndex].contents = code;
+		this.setState({ questions }, () => 	this.selectQuestion());
+	}
+
+  handleOnSubmitCode() {
 		this.setState({ loading: true });
-    app.submitCode(this.state.selectedLevel, code, Date.now())
+    app.submitCode(this.state.selectedLevel, this.state.selectedQuestion.contents, Date.now())
     	.then(res => {
 				this.setState((prevState) => {
-					// updating questions
-					var questions = prevState.questions.slice();
-					var selectedQuesIndex = questions.findIndex(q => q.info.level === prevState.selectedLevel);
-					questions[selectedQuesIndex].contents = code;
-
+				
 					// updating result status
 					var resultStatus = prevState.resultStatus.slice();
 					var foundedIndex = resultStatus.findIndex((rstat) => rstat.level === prevState.selectedLevel);
@@ -58,7 +61,7 @@ class Main extends React.Component {
 						resultStatus[foundedIndex].level = prevState.selectedLevel;
 						resultStatus[foundedIndex].isAccepted = (!res.data.compileErrors) ? true : false;
 					}
-					return { resultStatus, questions, loading: false };
+					return { resultStatus, loading: false };
 				});
 			});
   }
@@ -71,16 +74,16 @@ class Main extends React.Component {
 					settings: data[1],
 					startTime: data[0].startTime,
 					loading: false 
-				});
+				}, () => this.selectQuestion());
 			});
 	}
 
-	componentWillUpdate(nextProps, nextState) {
-		this.props.setContestDetails(nextState);
-	}
+	// componentWillUpdate(nextProps, nextState) {
+	// 	this.props.setContestDetails(nextState);
+	// }
 
 	handleOnClick(level) {
-		this.setState({ selectedLevel: level });
+		this.setState({ selectedLevel: level }, () => this.selectQuestion());
 	}
 
   render () {
@@ -93,21 +96,23 @@ class Main extends React.Component {
 
     return (
 			<div>
-				<Navigation>
-					<Sidebar 
-						problems={this.state.questions} 
-						selectLevel={this.handleOnClick} 
-					/>
-				</Navigation>
-				<div className="body-content">
+				<Navigation team={this.props.team} isAuthenticated/>
 					<Row>
-						<Col md={9}>
-							<Editor
-								selectedQuestion={this.state.selectedQuestion}
-                submitCode={this.handleOnSubmitCode} 
+						<Col md={2}>
+							<Sidebar 
+								problems={this.state.questions} 
+								selectedLevel={this.state.selectedLevel}
+								selectLevel={this.handleOnClick} 
 							/>
 						</Col>
-						<Col md={3}>
+						<Col md={8}>
+							<Editor
+								selectedQuestion={this.state.selectedQuestion}
+								saveCode={this.handleOnChangeQuestionContents}
+								submitCode={this.handleOnSubmitCode} 
+							/>
+						</Col>
+						<Col md={2}>
 							<Result
 								result={result}
 								startTime={this.state.startTime}
@@ -116,7 +121,6 @@ class Main extends React.Component {
 							/>
 						</Col>
 					</Row>
-				</div>
 			</div>
     );
   }
@@ -124,12 +128,8 @@ class Main extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    contestDetails: state.contestDetails
+    team: state.team
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ setContestDetails }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
+export default connect(mapStateToProps, null)(Main);

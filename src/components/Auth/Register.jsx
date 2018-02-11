@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import 'assets/css/validationBox.css';
 
 // importing components
-import { Row, Col, FormGroup, FormControl, InputGroup, Button, Alert } from 'react-bootstrap';
-import { Card, Footer, Content } from './Reusable';
+import Navigation from 'components/Navigation';
+import { Row, Col, FormGroup, FormControl, InputGroup, HelpBlock, Button } from 'react-bootstrap';
 import Loading from 'components/Loading/Loading';
 
 // import auth helper
@@ -21,15 +20,15 @@ class Register extends Component {
 			password: '',
 			re_password: '',
 			error_msgs: [],
-			isNoOfPlayersValid: false,
-			isPlayerOneNameValid: false,
-			isPlayerTwoNameValid: false,
-			isMobileNumberValid: false,
-			isTeamNameValid: false,
-			isPasswordValid: false,
-			isRePasswordValid: false,
-			isFormValid: false,
-			loading: false
+			isNoOfPlayersValid: null,
+			isPlayerOneNameValid: null,
+			isPlayerTwoNameValid: null,
+			isMobileNumberValid: null,
+			isTeamNameValid: null,
+			isPasswordValid: null,
+			isRePasswordValid: null,
+			isFormValid: null,
+			loading: null
 		}
 	}
 	
@@ -131,6 +130,16 @@ class Register extends Component {
 
 						if(res.data.errors) {
 							this.setState({ error_msgs: res.data.errors });
+						  res.data.errors.map(e => {
+								var name = e.path.replace(e.path.substr(-2), '');
+								var fieldIndex = this.props.formFields.findIndex(field => {
+									return field.props.name === name;
+								});
+							
+								this.props.formFields[fieldIndex].helpMsg = e.message;
+								var validationState = this.props.formFields[fieldIndex].validationState;
+								this.setState({[validationState]: false });
+							});
 						} 
 
 					} else if(res.data.statusText === "OK") {
@@ -143,11 +152,10 @@ class Register extends Component {
 		}
 	}
 	
-	getValidationState(name) {
-		if(!this.state[name].length) {
+	getValidationState(validationState) {
+		if(this.state[validationState] === false)
 			return "error";
-		}
-		return null;
+		return null;	
 	}
 	
 	render() {
@@ -156,87 +164,61 @@ class Register extends Component {
 		}
 
  		return (
-			<Row>
-				<Col md={8}>
-					{
-						this.state.error_msgs.map(msg => {
-							return (
-								<Alert bsStyle="danger" style={{margin: 'auto', width: '500px'}}>
-									<div className="container-fluid">
-									  <div className="alert-icon">
-											<i className="material-icons">warning</i>
-									  </div>
-								      <b>{msg.message}</b> 
-								    </div>
-								</Alert> 
-							)
-						})
-					}
-					<Card style={{marginTop: "20px"}}>
-						<Content>
-							<InputGroup>
-								<InputGroup.Addon>
-									<i className="material-icons">group</i>
-								</InputGroup.Addon>
+			<div>
+				<Navigation />
+				<div className="container">
+					<Row>
+						<Col md={4} mdOffset={4}>
+							<h3 className="page-header">Please Register from here</h3>
+							<form>
 								<FormGroup>
 									<FormControl
 										componentClass="select" 
 										name="no_of_players"
 										value={this.state.no_of_players}
 										onChange={this.handleInputChange.bind(this)}
-									 >
-									 	<option value={0}>Choose Number of players</option>
-									 	<option value={1}>One</option>
-									 	<option value={2}>Two</option>
+										>
+										<option value={0}>Choose Number of players</option>
+										<option value={1}>One</option>
+										<option value={2}>Two</option>
 									</FormControl>
+									<FormControl.Feedback />
 								</FormGroup>
-							</InputGroup>
-							{this.props.formFields.map(({ addonIcon, props }, index) => {
-								if(this.state.no_of_players === '1' && props.name === 'player_two_name')
-									return null; 	
-								return (
-									<InputGroup key={index}>
-										<InputGroup.Addon>
-											<i className="material-icons">{addonIcon}</i>
-										</InputGroup.Addon>
-										<FormGroup validationState={this.getValidationState(props.name)}>
-											<FormControl 
-												value={this.state[props.name]}
-												onChange={this.handleInputChange.bind(this)}
-												{...props}
-											/>
+								{this.props.formFields.map(({ addonIcon, helpMsg, validationState, props }, index) => {
+									if(this.state.no_of_players === '1' && props.name === 'player_two_name')
+										return null; 	
+									return (
+										<FormGroup key={index} validationState={this.getValidationState(validationState)}>
+											<InputGroup>
+												<InputGroup.Addon>
+													<i className="material-icons md-18">{addonIcon}</i>
+												</InputGroup.Addon>
+												<FormControl 
+													value={this.state[props.name]}
+													onChange={this.handleInputChange.bind(this)}
+													{...props}
+												/>
+											</InputGroup>
 											<FormControl.Feedback />
+											{this.state[validationState] === false
+												&& 	<HelpBlock>{ helpMsg }</HelpBlock>
+											}
 										</FormGroup>
-									</InputGroup>
-								);
-							})}
-						</Content>
-						<Footer>
-							<Button 
-								type="button"
-								bsStyle="success"
-								onClick={this.handleSubmit.bind(this)}
-								disabled={!this.state.isFormValid}
-							>
-								Sign Up
-							</Button>
-						</Footer>
-					</Card>
-				</Col>
-				<Col md={3}>
-					<div className="aro-pswd_info">
-						<div id="pswd_info">
-							<h4>Requirements</h4>
-							<ul>
-								<li className={this.state.isFormValid ? "valid" : "invalid"}>Every fields are mandatory</li>
-								<li className={this.state.isNoOfPlayersValid ? "valid" : "invalid"}>Can have atmost two players</li>
-								<li className={this.state.isTeamNameValid ? "valid" : "invalid"}>Team name must not contain any spaces and special characters</li>
-								<li className={this.state.isPasswordValid ? "valid" : "invalid"}>Password Be at least <strong>8 characters</strong></li>
-							</ul>
-						</div>
-					</div>
-				</Col>	
-			</Row>
+									);
+								})}
+								<Button 
+									type="button"
+									bsStyle="success"
+									onClick={this.handleSubmit.bind(this)}
+									disabled={!this.state.isFormValid}
+								>
+									Register
+								</Button>
+							</form>
+						</Col>
+					</Row>	
+				</div>
+			</div>	
 		);
 	}
 }
@@ -249,46 +231,58 @@ Register.defaultProps = {
 				type: 'text',
 				placeholder: 'Player One Name'
 			},
+			validationState: "isPlayerOneNameValid",
+			helpMsg: "Player1 Name is Required",
 			addonIcon: 'face',
 		},
 		{
 			props: {
 				name: 'player_two_name',
 				type: 'text',
-				placeholder: 'Player Two Name'
+				placeholder: 'Player Two Name',
 			},
+			validationState: "isPlayerTwoNameValid",
+			helpMsg: "Player2 Name is Required",
 			addonIcon: 'face'
 		},
 		{
 			props: {
 				name: 'mobile_number',
 				type: 'number',
-				placeholder: 'Contact Number'
+				placeholder: 'Contact Number',
 			},
+			validationState: "isMobileNumberValid",
+			helpMsg: "Mobile Number is Required",
 			addonIcon: 'phone'
 		},
 		{
 			props: {
 				name: 'team_name',
 				type: 'text',
-				placeholder: 'Team Name'
+				placeholder: 'Team Name',
 			},
-			addonIcon: 'group'
+			addonIcon: 'group',
+			validationState: "isTeamNameValid",
+			helpMsg: "Space and special characters are not allowed"
 		},
 		{
 			props: {
 				name: 'password',
 				type: 'password',
-				placeholder: 'Password'
+				placeholder: 'Password',
 			},
-			addonIcon: 'lock'
+			addonIcon: 'lock',
+			validationState: "isPasswordValid",
+			helpMsg: "Atleast 8 characters"
 		},
 		{
 			props: {
 				name: 're_password',
 				type: 'password',
-				placeholder: 'Confirm Password'
+				placeholder: 'Confirm Password',
 			},
+			validationState: "isRePasswordValid",
+			helpMsg: "Password doesn't match",
 			addonIcon: 'lock'
 		}
 	] 

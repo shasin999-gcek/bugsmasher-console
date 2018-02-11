@@ -4,7 +4,7 @@ import AceEditor from 'react-ace';
 
 import 'brace/mode/csharp';
 import 'brace/theme/solarized_light';
-import 'brace/theme/monokai';
+import 'brace/theme/xcode';
 
 
 class Editor extends React.Component {
@@ -13,14 +13,6 @@ class Editor extends React.Component {
     this.state = {
       contents: '',
     }
-  }
-
-  handleOnChange(contents) {
-    this.setState({ contents })
-  }
-
-  handleOnSubmit(e) {
-    this.props.submitCode(this.state.contents);
   }
 
   componentDidMount() {
@@ -49,14 +41,13 @@ class Editor extends React.Component {
         <div>
           <AceEditor
             mode="csharp"
-            theme="monokai"
+            theme="xcode"
             name="blah2"
             onLoad={this.onLoad}
-            onChange={(v) => this.handleOnChange(v)}
+            onChange={(v) => this.props.saveCode(v)}
             fontSize={18}
-            width="803.25px"
-            height="100px"
-            minLines={20}
+            width="100%"
+            height="400px"
             maxLines={23}
             editorProps={{$blockScrolling: true}}
             value={this.state.contents}
@@ -77,7 +68,7 @@ class Editor extends React.Component {
           <div className="editor-buttons-container">
             <button 
               className="btn btn-success"
-              onClick={e => this.handleOnSubmit(e)}>
+              onClick={e => this.props.submitCode()}>
               Submit
             </button>
           </div>

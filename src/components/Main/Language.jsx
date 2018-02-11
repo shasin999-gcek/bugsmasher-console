@@ -11,7 +11,10 @@ const styles = {
 	modal: {
 		display: 'block',
 		textAlign: 'center',
-		fontSize: '25px'
+		fontSize: '25px',
+		position: 'relative',
+    top: '50%',
+    transform: 'translateY(50%)'
 	},
 	button: {
 		fontSize: '20px',

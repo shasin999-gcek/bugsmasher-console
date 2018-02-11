@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Well } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 
 import CountDownTimer from './CountDownTimer';
 
@@ -17,21 +17,14 @@ class Result extends React.Component {
          {this.props.result &&
             <div>
               <hr />
-              <h3><u>Level {this.props.result.level } status</u></h3>
+              <h3 className="page-header">Level {this.props.result.level } status</h3>
               <Alert bsStyle={this.props.result.isAccepted ? "success" : "danger"} className="submit-status">
-                <div className="container-fluid">
-                  <div className="alert-icon">
-                    <i className="material-icons">
-                      {this.props.result.isAccepted ? "done" : "error_outline"}
-                    </i>
-                  </div>
-                  <strong>
-                    {this.props.result.isAccepted
-                      ? "Submission Accepted"
-                      : "Submission Rejected" 
-                    }
-                  </strong>
-                </div>
+                <strong>
+                  {this.props.result.isAccepted
+                    ? "Submission Accepted"
+                    : "Submission Rejected" 
+                  }
+                </strong>
               </Alert>
             </div>
          }

@@ -9,7 +9,8 @@ class CountDownTimer extends Component  {
 	constructor(props) {
 		super(props);
 		this.state = {
-      startTime: '',
+      duration: props.duration,
+      startTime: props.startTime,
 			minutes: '',
 			seconds: '',
       loading: false
@@ -66,7 +67,9 @@ class CountDownTimer extends Component  {
   }
 
   render() {
-    const { minutes, seconds, loading } = this.state;
+    let { minutes, seconds, loading } = this.state;
+    minutes = (minutes < 10) ? "0" + minutes : minutes;
+    seconds = (seconds < 10) ? "0" + seconds : seconds;
 
     if(loading) {
       return <Loading loading={true} />
@@ -74,8 +77,8 @@ class CountDownTimer extends Component  {
 
   	return (
   		<Nav bsStyle="pills" justified activeKey={2} onSelect={this.handleSelect}>
-       <NavItem eventKey={2} title="Item">
-         <i className="material-icons">timer</i>
+       <NavItem eventKey={2} title="Item" style={{ fontSize: '20px'}}>
+         <span className="glyphicon glyphicon-time"></span> &nbsp;
           { [minutes, seconds].join(":") + ' sec' }
        </NavItem>
     	</Nav>

@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { bake_cookie, read_cookie } from 'sfcookies';
-import axios from 'axios';
+import { bake_cookie } from 'sfcookies';
 
 import { InputGroup, FormGroup, FormControl, Button,Alert } from 'react-bootstrap';
 import { Header, Card, Content, Footer } from './Reusable';
@@ -72,14 +71,9 @@ class Login extends React.Component {
 				<Navigation />
 				{
 					this.state.error_msg && (
-						<Alert bsStyle="danger" style={{margin: 'auto', width: '500px'}}>
-							<div className="container-fluid">
-							  <div className="alert-icon">
-									<i className="material-icons">warning</i>
-							  </div>
-						      <b>{this.state.error_msg}</b> 
-						    </div>
-						</Alert> 
+						<Alert bsStyle="danger" className="col-md-4 col-md-offset-4">
+							<strong>{this.state.error_msg}</strong>
+						</Alert>
 				)}
 				<Card style={{marginTop: "100px"}}>
 					<Header style={{
@@ -87,16 +81,16 @@ class Login extends React.Component {
 				    fontWeight: 'bold',
 				    fontSize: '20px',
 					}}>
-						<h4>Login</h4>
+						<h3 className="page-header text-primary">Login</h3>
 					</Header>
 					<Content style={{marginTop: "30px"}}>
 						{this.props.formFields.map((formField, index) => {
 							return (
-								<InputGroup key={index}> 
-									<InputGroup.Addon>
-										<i className="material-icons">{formField.addonIcon}</i>
-									</InputGroup.Addon>
-									<FormGroup>
+								<FormGroup key={index}>
+									<InputGroup>
+										<InputGroup.Addon>
+											<i className="material-icons md-18">{formField.addonIcon}</i>
+										</InputGroup.Addon>
 										<FormControl
 											type={formField.type}
 											name={formField.name}
@@ -105,8 +99,8 @@ class Login extends React.Component {
 											onChange={this.handleInputChange.bind(this)}
 											required
 										/>
-									</FormGroup>
-								</InputGroup>
+									</InputGroup>
+								</FormGroup>
 							);
 						})}
 					</Content>
@@ -131,13 +125,13 @@ Login.defaultProps = {
 		{
 			name: 'team_name',
 			type: 'text',
-			addonIcon: '',
+			addonIcon: 'group',
 			placeholder: 'Team Name'
 		},
 		{
 			name: 'password',
 			type: 'password',
-			addonIcon: '',
+			addonIcon: 'lock',
 			placeholder: 'password'
 		}
 	]
