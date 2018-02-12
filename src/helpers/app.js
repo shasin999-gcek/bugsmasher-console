@@ -50,5 +50,9 @@ export default {
     		// Both requests are now complete
     		return [ ques.data, settgs.data ];
   		})).catch(e => handleError(e));
+	},
+
+	getSiteSettings() {
+		return axios.get(url + '/settings').catch(e => handleError(e));
 	}
 }

@@ -32,7 +32,7 @@ class Main extends React.Component {
 		var selectedQuestion = this.state.questions.find(question => {
 			return question.info.level === this.state.selectedLevel
 		});
-		this.setState({ selectedQuestion });
+		this.setState({ selectedQuestion, loading : false });
 	}
 
 	handleOnChangeQuestionContents(code) {
@@ -73,7 +73,6 @@ class Main extends React.Component {
 					questions: data[0].questions,
 					settings: data[1],
 					startTime: data[0].startTime,
-					loading: false 
 				}, () => this.selectQuestion());
 			});
 	}

@@ -1,0 +1,8 @@
+div.maintenance { text-align: center; padding: 10%; font: 20px Helvetica, sans-serif; color: #333; }
+div.maintenance h1 { font-size: 50px; margin: 0; }
+article { display: block; text-align: left; max-width: 650px; margin: 0 auto; }
+div.maintenance a { color: #dc8100; text-decoration: none; }
+div.maintenance a:hover { color: #333; text-decoration: none; }
+@media only screen and (max-width : 480px) {
+    h1 { font-size: 40px; }
+}
