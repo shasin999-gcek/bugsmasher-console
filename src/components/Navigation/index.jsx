@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import { Link, withRouter } from 'react-router-dom';
+import { delete_cookie } from 'sfcookies';
 
 import app from 'helpers/app';
 
@@ -10,6 +11,7 @@ class Navigation extends Component{
     app.endCompetition()
     .then(res => {
       if(res.status === 200) {
+        delete_cookie('token');
         this.props.history.push('/app/finished');
       }
     });
