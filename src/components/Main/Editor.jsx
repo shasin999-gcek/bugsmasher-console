@@ -40,7 +40,7 @@ class Editor extends React.Component {
         </div>
         <div>
           <AceEditor
-            mode="csharp"
+            mode=""
             theme="xcode"
             name="blah2"
             onLoad={this.onLoad}
